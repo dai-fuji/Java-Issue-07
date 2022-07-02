@@ -7,6 +7,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.constraints.Pattern;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +19,24 @@ public class DemoController {
     public String getName( @RequestParam("id") @Pattern (regexp = "^[1-3]$" ) String id) {
         Map<Integer, String> namesById = Map.of(1,"Ichiro",2, "Jiro",3,"Saburo");
         return namesById.get(Integer.valueOf(id));
+    }
+
+    @GetMapping("/fruit")
+    public List<String> getFruitList(@RequestParam("priceMin") @Pattern (regexp = "^[0-9]{1,4}$" ) String priceMin) {
+        Map<String, Integer> fruits = Map.of("apple",100,"orange", 150,"grape",1000);
+        Integer priceMinToInt = Integer.valueOf(priceMin);
+        List<String> fruitsFilterByPrice = new ArrayList<>();
+
+        fruits.forEach((fruitName, fruitPrice) -> {
+            Integer price = Integer.valueOf(fruitPrice);
+            if (priceMinToInt < price){
+                fruitsFilterByPrice.add(fruitName);
+            }
+        });
+        if (fruitsFilterByPrice.isEmpty()){
+            return null;
+        }
+        return fruitsFilterByPrice;
     }
 
     @PostMapping("/names")
